@@ -33,83 +33,69 @@
 #                                                                                                 #
 ###################################################################################################
 
-include ../Makefile.rule
+include ../../Makefile.rule
 
 OBJS =
 
+ifeq ($(LA), HIGH_PERFORMANCE)
+
 ifeq ($(TARGET), X64_INTEL_HASWELL)
-OBJS += kernel_align_x64.o
+OBJS += \
+		kernel_dgemm_diag_lib4.o \
+		kernel_dgemv_4_lib4.o \
+		kernel_dgeqrf_4_lib4.o \
+		kernel_dgecp_lib4.o \
+		kernel_dgetr_lib4.o \
+		kernel_dpack_lib4.o \
+		\
+		kernel_sgemm_diag_lib8.o \
+		kernel_sgetr_lib8.o \
+		kernel_sgead_lib8.o \
+		kernel_sgecpsc_lib8.o \
+		kernel_sgemv_8_lib8.o \
+		kernel_sgemv_4_lib8.o \
+		kernel_spack_lib8.o \
+
 endif
+
 ifeq ($(TARGET), X64_INTEL_SANDY_BRIDGE)
-OBJS += kernel_align_x64.o
+OBJS += \
+		kernel_dgemm_12x4_lib4.o \
+		kernel_dgemm_8x4_lib4.o \
+		kernel_dgemm_4x4_lib4.o \
+		kernel_dgemm_diag_lib4.o \
+		kernel_dgemv_12_lib4.o \
+		kernel_dgemv_8_lib4.o \
+		kernel_dgemv_4_lib4.o \
+		kernel_dsymv_6_lib4.o \
+		kernel_dgetrf_pivot_lib4.o \
+		kernel_dgeqrf_4_lib4.o \
+		kernel_dgebp_lib4.o \
+		kernel_dgecp_lib4.o \
+		kernel_dgetr_lib4.o \
+		kernel_dpack_lib4.o \
+		\
+		kernel_sgemm_16x4_lib8.o \
+		kernel_sgemm_8x8_lib8.o \
+		kernel_sgemm_8x4_lib8.o \
+		kernel_sgemm_diag_lib8.o \
+		kernel_sgecpsc_lib8.o \
+		kernel_sgetr_lib8.o \
+		kernel_sgead_lib8.o \
+		kernel_sgetr_lib8.o \
+		kernel_sgemv_8_lib8.o \
+		kernel_sgemv_4_lib8.o \
+		kernel_spack_lib8.o \
+		\
+#		kernel_sgemm_16x8_lib8.o \
+
 endif
-ifeq ($(TARGET), X64_INTEL_CORE)
-OBJS += kernel_align_x64.o
-endif
-ifeq ($(TARGET), X64_AMD_BULLDOZER)
-OBJS += kernel_align_x64.o
-endif
-ifeq ($(TARGET), X86_AMD_JAGUAR)
-OBJS += kernel_align_x86.o
-endif
-ifeq ($(TARGET), X86_AMD_BARCELONA)
-OBJS += kernel_align_x86.o
-endif
-ifeq ($(TARGET), $(filter $(TARGET), ARMV8A_ARM_CORTEX_A57 ARMV8A_ARM_CORTEX_A53))
-OBJS += kernel_align_generic.o
-endif
-ifeq ($(TARGET), $(filter $(TARGET), ARMV7A_ARM_CORTEX_A15 ARMV7A_ARM_CORTEX_A9 ARMV7A_ARM_CORTEX_A7))
-OBJS += kernel_align_generic.o
-endif
-ifeq ($(TARGET), GENERIC)
-OBJS += kernel_align_generic.o
-endif
+
+else # LA_REFERENCE | LA_BLAS
+
+endif # LA choice
 
 obj: $(OBJS)
-ifeq ($(TARGET), X64_INTEL_HASWELL)
-	( cd avx2; $(MAKE) obj)
-	( cd avx; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), X64_INTEL_SANDY_BRIDGE)
-	( cd avx; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), X64_INTEL_CORE)
-	( cd sse3; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), X64_AMD_BULLDOZER)
-	( cd fma; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), X86_AMD_JAGUAR)
-	( cd avx_x86; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), X86_AMD_BARCELONA)
-	( cd sse3_x86; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), $(filter $(TARGET), ARMV8A_ARM_CORTEX_A57 ARMV8A_ARM_CORTEX_A53))
-	( cd armv8a; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), $(filter $(TARGET), ARMV7A_ARM_CORTEX_A15 ARMV7A_ARM_CORTEX_A9 ARMV7A_ARM_CORTEX_A7))
-	( cd armv7a; $(MAKE) obj)
-	( cd generic; $(MAKE) obj)
-endif
-
-ifeq ($(TARGET), GENERIC)
-	( cd generic; $(MAKE) obj)
-endif
 
 clean:
 	rm -f *.o
@@ -117,13 +103,10 @@ clean:
 	rm -f *.gcda
 	rm -f *.gcno
 	rm -f *.gcov
-	make -C avx2 clean
-	make -C avx clean
-	make -C avx_x86 clean
-	make -C sse3 clean
-	make -C sse3_x86 clean
-	make -C fma clean
-	make -C armv8a clean
-	make -C armv7a clean
-	make -C generic clean
 
+kernel_dgemm_8x4_lib4.o: kernel_dgemm_8x4_lib4.S kernel_dgemm_8x4_lib.S
+kernel_dgemm_4x4_lib4.o: kernel_dgemm_4x4_lib4.S kernel_dgemm_4x4_lib.S
+kernel_dgetrf_pivot_lib4.o: kernel_dgetrf_pivot_lib4.c kernel_dgetrf_pivot_lib.c
+kernel_sgemm_8x4_lib8.o: kernel_sgemm_8x4_lib8.S kernel_sgemm_8x4_lib.S
+kernel_sgemm_8x8_lib8.o: kernel_sgemm_8x8_lib8.S kernel_sgemm_8x8_lib.S
+kernel_sgemm_16x4_lib8.o: kernel_sgemm_16x4_lib8.S kernel_sgemm_16x4_lib.S
