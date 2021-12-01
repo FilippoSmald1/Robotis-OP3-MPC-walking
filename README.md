@@ -20,7 +20,7 @@ to
 ```
 catkin_make DCMAKE_BUILD_TYPE=Release
 ```
-8) In order to run the gazebo simulation, open a new terminal and type (assuming you have not sourced yet the devel/setup.bash)
+8) In order to run the gazebo simulation, open a new terminal and type (inside the catkin workspace)
 ```
 source devel/setup.bash
 roslaunch op3_gazebo robotis_world.launch
