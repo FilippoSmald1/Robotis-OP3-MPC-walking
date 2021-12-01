@@ -4,7 +4,7 @@ MPC based gait generation and kinematic control for the Robotis OP3 humanoid
 **SET UP GUIDE**
 
 1) Install ROS Kinetic or [Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu). It probably works also on Noetic but it has not been tested there yet.
-2) Install the [ROBOTIS OP3](https://emanual.robotis.com/docs/en/platform/op3/recovery/#installing-robotis-ros-packages) ROS packages.
+2) Install the [ROBOTIS OP3](https://emanual.robotis.com/docs/en/platform/op3/recovery/#installing-robotis-ros-packages) ROS packages and all the required dependencies (starting from **1.1.2.4. Installing additional applications for ROBOTIS ROS Package**).
 3) Navigate into the catkin workspace of the robotis packages and clone this repository inside the directory */src/ROBOTIS-OP3*.
 4) Navigate into the directory */src/ROBOTIS-OP3/Robotis-OP3-MPC-walking/mpc_walking_demo* and clone there the [blasfeo](https://github.com/giaf/blasfeo) and [hpipm](https://github.com/giaf/hpipm) repositories. Alternatively, you can unzip the file blasfeo&hpipm.zip (which is inside */src/ROBOTIS-OP3/Robotis-OP3-MPC-walking/mpc_walking_demo*) and place the *blasfeo* and *hpipm* directory inside the */mpc_walking_demo* directory.
 5) Copy and paste the file */src/ROBOTIS-OP3/Robotis-OP3-MPC-walking/mpc_walking_demo/robotis_op3.urdf* inside */src/ROBOTIS-OP3-Common/op3_description/urdf*.
