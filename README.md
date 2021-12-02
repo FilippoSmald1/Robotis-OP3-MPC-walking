@@ -1,5 +1,5 @@
 # Robotis-OP3-MPC-walking
-MPC based gait generation and kinematic control for the Robotis OP3 humanoid
+MPC based gait generation and kinematic control for the Robotis OP3 humanoid ([video](https://www.youtube.com/watch?v=oIfSCS7BJOY))
 
 **SET UP GUIDE**
 
