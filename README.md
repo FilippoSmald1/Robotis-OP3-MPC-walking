@@ -18,7 +18,7 @@ to
 ```
 7) Compile the packages (type from terminal inside the catkin workspace)
 ```
-catkin_make DCMAKE_BUILD_TYPE=Release
+catkin_make -DCMAKE_BUILD_TYPE=Release
 ```
 8) In order to run the gazebo simulation, open a new terminal and type (inside the catkin workspace)
 ```
