@@ -21,15 +21,15 @@
 
 
 inline Eigen::VectorXd solveQP_hpipm(Eigen::MatrixXd& costFunctionH, Eigen::VectorXd& costFunctionF, 
-		Eigen::MatrixXd& AConstraint, Eigen::VectorXd& bConstraintMin, Eigen::VectorXd& bConstraintMax, Eigen::MatrixXd& AeqZ, Eigen::VectorXd& beqZ) {
+		Eigen::MatrixXd& AConstraint, Eigen::VectorXd& bZMPMin, Eigen::VectorXd& bZMPMax, Eigen::MatrixXd& Aeq, Eigen::VectorXd& beq) {
 
     int n_variables = costFunctionH.cols();
     int n_constr = AConstraint.rows() ;
 
     int nv = n_variables;
-    int ne = AeqZ.rows();
+    int ne = Aeq.rows();
 
-    int nb = 0; 
+    int nb = 0*n_constr; 
     int ng = n_constr;
     int ns = 0; 
     int nsb = 0; 
@@ -39,15 +39,11 @@ inline Eigen::VectorXd solveQP_hpipm(Eigen::MatrixXd& costFunctionH, Eigen::Vect
     double g[n_variables] = {};
     double d_lb[n_constr] = {};
     double d_ub[n_constr] = {};
-    double _lb[n_constr] = {};
-    double _ub[n_constr] = {};
-    double C[n_constr*n_variables] = {};
-    
     double A[ne*n_variables] = {};
     double b[ne] = {};
+    double C[n_constr*n_variables] = {};
 
     for (int i = 0; i<n_variables; i++) {
-        //idxb[i] = i;
         g[i] = costFunctionF(i);
 
         for (int j = 0; j<n_variables; j++) {
@@ -55,22 +51,22 @@ inline Eigen::VectorXd solveQP_hpipm(Eigen::MatrixXd& costFunctionH, Eigen::Vect
         }
     }
 
-
     for (int k = 0; k<n_constr; k++) {
-        d_lb[k] = bConstraintMin(k); //bConstraintMin(k);
-        d_ub[k] = bConstraintMax(k); //bConstraintMax(k);
-
+        d_lb[k] = bZMPMin(k); //bConstraintMin(k);
+        d_ub[k] = bZMPMax(k); //bConstraintMax(k);
         for (int j = 0; j<n_variables; j++) {
             C[j*n_constr+k] = AConstraint(k,j); //AConstraint(k,j);
         }
     }
-
+  
     for (int k = 0; k<ne; k++) {
-        b[k] = beqZ(k); 
+        b[k] = beq(k); 
         for (int j = 0; j<n_variables; j++) {
-            A[j*ne+k] = AeqZ(k,j); //AConstraint(k,j);
+            A[j*ne+k] = Aeq(k,j); //AConstraint(k,j);
         }
     }
+
+    // allocate memory for QP struct
 
     int dim_size = d_dense_qp_dim_memsize();
     void *dim_mem = malloc(dim_size);
@@ -87,12 +83,15 @@ inline Eigen::VectorXd solveQP_hpipm(Eigen::MatrixXd& costFunctionH, Eigen::Vect
     d_dense_qp_set_H(H, &qp);
     d_dense_qp_set_g(g, &qp);
 
+    //if (itr == 20 ) { // do nothing
+    //} else {
+        d_dense_qp_set_A(A, &qp);
+        d_dense_qp_set_b(b, &qp);
+    //}
+
     d_dense_qp_set_C(C, &qp);
     d_dense_qp_set_lg(d_lb, &qp);
     d_dense_qp_set_ug(d_ub, &qp);
-
-    d_dense_qp_set_A(A, &qp);
-    d_dense_qp_set_b(b, &qp);
 
     // allocate memory for the solution
 
@@ -107,7 +106,7 @@ inline Eigen::VectorXd solveQP_hpipm(Eigen::MatrixXd& costFunctionH, Eigen::Vect
     void *ipm_arg_mem = malloc(ipm_arg_size);
     struct d_dense_qp_ipm_arg arg;
     d_dense_qp_ipm_arg_create(&dim, &arg, ipm_arg_mem);
-    enum hpipm_mode mode = SPEED;//ROBUST;   // set mode ROBUST, SPEED, BALANCE, SPEED_ABS
+    enum hpipm_mode mode = BALANCE;//ROBUST;   // set mode ROBUST, SPEED, BALANCE, SPEED_ABS
     d_dense_qp_ipm_arg_set_default(mode, &arg);
 
     int ipm_size = d_dense_qp_ipm_ws_memsize(&dim, &arg);
